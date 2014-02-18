@@ -1,0 +1,60 @@
+<project>
+ <properties autorotation="0" encryptAssets="0" fps="60" scaleMode="3" mouseToTouch="1" iosDevice="0" packageName="com.yourdomain.yourapp" logicalHeight="1280" logicalWidth="720" mouseTouchOrder="0" encryptCode="0" retinaDisplay="0" touchToMouse="1" assetsOnly="0" orientation="1" architecture="0">
+  <imageScales/>
+ </properties>
+ <folder name="enemy">
+  <file source="hp_bar.lua"/>
+  <file source="hitdamagetext.lua"/>
+  <file source="enemy02.png"/>
+  <file source="enemy_hp_bar_frame.png"/>
+  <file source="enemy_hp_bar.png"/>
+  <file source="enemy.lua"/>
+ </folder>
+ <folder name="effect">
+  <file source="timeeffect.lua"/>
+  <file source="levelup_effect.png"/>
+  <file source="new_stage.png"/>
+  <file source="player_hit_effect.png"/>
+ </folder>
+ <folder name="pad">
+  <file source="fire_button.png"/>
+  <file source="vpad_stick.png"/>
+  <file source="vpad_ring.png"/>
+  <file source="pad.lua"/>
+ </folder>
+ <folder name="dungeon">
+  <file source="tile04.png"/>
+  <file source="world.lua"/>
+  <file source="spawndata.lua"/>
+  <file source="map.lua"/>
+  <file source="mission_clear.png"/>
+ </folder>
+ <folder name="weapon">
+  <file source="arrow.png"/>
+  <file source="sword.png"/>
+  <file source="staff.lua"/>
+  <file source="bow.lua"/>
+  <file source="sword.lua"/>
+ </folder>
+ <folder name="Text">
+  <file source="textout.lua"/>
+  <file source="mtcg.ttf"/>
+ </folder>
+ <folder name="button">
+  <file source="button.lua"/>
+  <file source="button_over.png"/>
+  <file source="button_default.png"/>
+ </folder>
+ <folder name="Intro">
+  <file source="lobby_selection.png"/>
+  <file source="lobby.lua"/>
+ </folder>
+ <folder name="player">
+  <file source="warrior.png"/>
+  <file source="archer.png"/>
+  <file source="wizard.png"/>
+  <file source="player_light.png"/>
+  <file source="player.lua"/>
+ </folder>
+ <file source="main.lua"/>
+</project>

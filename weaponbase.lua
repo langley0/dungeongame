@@ -1,0 +1,3 @@
+WeaponBase = Core.class(Sprite)
+
+
