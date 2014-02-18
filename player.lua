@@ -18,6 +18,7 @@ local function init_warrior(self)
 	self.exp = 0
 	
 	self.hp_max = 100
+	self.hp = self.hp_max
 	self.str =1 
 	self.int = 1
 	self.def = 1
@@ -58,6 +59,7 @@ local function init_archer(self)
 	self.exp = 0
 	
 	self.hp_max = 100
+	self.hp = self.hp_max
 	self.str =1 
 	self.int = 1
 	self.def = 1
@@ -98,6 +100,7 @@ local function init_wizard(self)
 	self.exp = 0
 	
 	self.hp_max = 100
+	self.hp = self.hp_max
 	self.str =1 
 	self.int = 1
 	self.def = 1
@@ -149,7 +152,7 @@ function Player.create(type)
 	p.light:setScale(6,6)
 	
 	p.attack_delay = 0
-	p.speed = 250
+	p.speed = 400
 	
 	return p
 end 
@@ -250,16 +253,23 @@ end
 function Player:OnHit(damage)
 	
 	-- 공격을 당했다.
-	if self.hiteffect then 
-		if self.hiteffect.finished then 
-			-- 아무것도 안한다
-		else 
-			-- 이펙트를 강제로 종료시킨다
-			self.hiteffect:Finish()
+	self.hp = self.hp - damage
+	if self.hp <= 0 then 
+		self.hp = 0
+		-- 미션 실패이다.
+		-- ?? 어떻게 할지는 미정
+	else 
+		if self.hiteffect then 
+			if self.hiteffect.finished then 
+				-- 아무것도 안한다
+			else 
+				-- 이펙트를 강제로 종료시킨다
+				self.hiteffect:Finish()
+			end 
 		end 
-	end 
-	
-	self.hiteffect = TimeEffect.create(player_hit_texture, 0.1, Sprite.MULTIPLY)
-	self.hiteffect:setScale(3, 3)
-	self:addChild(self.hiteffect)
+		
+		self.hiteffect = TimeEffect.create(player_hit_texture, 0.5, Sprite.MULTIPLY)
+		self.hiteffect:setScale(3, 3)
+		self:addChild(self.hiteffect)
+	end
 end 

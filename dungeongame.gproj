@@ -23,6 +23,8 @@
   <file source="pad.lua"/>
  </folder>
  <folder name="dungeon">
+  <file source="player_hud.png"/>
+  <file source="hud.lua"/>
   <file source="tile04.png"/>
   <file source="world.lua"/>
   <file source="spawndata.lua"/>
@@ -51,16 +53,16 @@
   <file source="button_over.png"/>
   <file source="button_default.png"/>
  </folder>
- <folder name="Intro">
-  <file source="lobby_selection.png"/>
-  <file source="lobby.lua"/>
- </folder>
  <folder name="player">
   <file source="warrior.png"/>
   <file source="archer.png"/>
   <file source="wizard.png"/>
   <file source="player_light.png"/>
   <file source="player.lua"/>
+ </folder>
+ <folder name="Intro">
+  <file source="lobby_selection.png"/>
+  <file source="lobby.lua"/>
  </folder>
  <file source="main.lua"/>
 </project>

@@ -138,6 +138,7 @@ function Arrow:Update(event)
 		-- 대미지 계산
 		
 		world:Hit(enemy, self.damage)
+		enemy:Knockback(self.moving.x * 200, self.moving.y * 200)
 		
 		-- 히트했으면 사라진다
 		self:removeEventListener(Event.ENTER_FRAME, self.Update, self)
