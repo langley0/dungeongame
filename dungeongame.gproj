@@ -30,6 +30,12 @@
   <file source="mission_clear.png"/>
  </folder>
  <folder name="weapon">
+  <folder name="icebolt_hit_explosion">
+   <file source="icebolt_hit_2.png"/>
+   <file source="icebolt_hit_1.png"/>
+   <file source="icebolt_hit_0.png"/>
+  </folder>
+  <file source="icebolt.png"/>
   <file source="arrow.png"/>
   <file source="sword.png"/>
   <file source="staff.lua"/>

@@ -138,7 +138,7 @@ end
 function World:GetAllEnemyInRange(x, y, range)
 	
 	-- 적들의 반경을 더한다
-	local range_sqr = (range + 24)*(range + 24)
+	local range_sqr = (range * 24)*(range * 24)
 	local result = {}
 	
 	
