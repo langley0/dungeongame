@@ -161,6 +161,61 @@ local function init_wizard(self)
 	
 end 
 
+local function init_spaceman(self)
+	
+	self.name = "SPACEMAN"
+	self.level = 1
+	self.exp = 0
+	
+	self.hp_max = 100
+	self.hp = self.hp_max
+	
+	self.stamina_max = 100
+	self.stamina = self.stamina_max
+	self.stamina_recovery = 10
+	self.last_stamina_used = 0
+	
+	
+	self.str =1 
+	self.int = 1
+	self.def = 1
+	self.dex = 1
+	
+	self.recharge = 0
+	self.c_speed = 100
+	
+	-- 스킬 설정 
+	self.skill_A = Science_EnergyBall.create()
+	self.skill_B = Science_LaserBeam.create()
+	
+	self.skills = {}
+	self.skills[1] = self.skill_A
+	self.skills[2] = self.skill_B
+
+	---
+	local p_texture = Texture.new("player/spaceman.png")
+	local bitmaps = {
+		Bitmap.new(TextureRegion.new(p_texture, 0,0,16,16)),
+		Bitmap.new(TextureRegion.new(p_texture, 16,0,16,16)) }
+		
+	for i = 1, #bitmaps do 
+		bitmaps[i]:setAnchorPoint(0.5, 0.5)
+		bitmaps[i]:setScale(SPRITE_SCALE,SPRITE_SCALE)
+	end
+	local movie = MovieClip.new({
+		{ 1, 4, bitmaps[1] },
+		{ 5, 8, bitmaps[2] }
+	})
+	
+	movie:setGotoAction(8,1)
+	
+	self:addChild(movie)
+	self.movie = movie
+	self.movie:stop()
+	self.stopped = true
+	
+end 
+
 function Player.create(type)
 
 	local p = Player.new()
@@ -171,6 +226,8 @@ function Player.create(type)
 		init_archer(p)
 	elseif type == "wizard" then 
 		init_wizard(p)
+	elseif type == "spaceman" then 
+		init_spaceman(p)
 	end 
 		
 	-- 플레이어용 라이트 리스트를 추가한다
@@ -243,7 +300,6 @@ function Player:Update(event)
 		if skill.activate then 
 			-- 차지스킬이다!
 			if skill:CanUse(self, world) then 
-				
 				skill:Use(self, world)
 				-- 차지 스킬은 두개를 동시에 쓸일이 있나?
 				charge_skill_used = true

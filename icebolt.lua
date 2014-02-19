@@ -88,7 +88,7 @@ function IceBolt.create(x, y, speed, distance, level, world)
 	icebolt.flying_distance = 0
 	
 	-- 영향 범위
-	icebolt.hitRadius = level * 1.5 -- 일단은 이렇게...
+	icebolt.hitRadius = level * 1.5 * 24 -- 일단은 이렇게...
 	icebolt.explosionSize = level * 1.5
 	
 	return icebolt
@@ -134,43 +134,46 @@ function IceBolt:Update(event)
 	
 end 
 
-function IceBolt:makeHitExplosion()
-	local x, y = self:getPosition()
-	local explosionSprite = ExplosionSprite.new(self.explosionSize)
-	explosionSprite:setPosition(x, y)
-	self:getParent():addChild(explosionSprite)
-end
-
 local icebolt_hit_explosion_textures = {
 	Texture.new("weapon/icebolt_hit_explosion/icebolt_hit_0.png"),
 	Texture.new("weapon/icebolt_hit_explosion/icebolt_hit_1.png"),
 	Texture.new("weapon/icebolt_hit_explosion/icebolt_hit_2.png"),
 }
 
+function IceBolt:makeHitExplosion()
+	local x, y = self:getPosition()
+	local explosionSprite = ExplosionSprite.create(icebolt_hit_explosion_textures, self.explosionSize)
+	explosionSprite:setPosition(x, y)
+	self:getParent():addChild(explosionSprite)
+end
+
 ExplosionSprite = Core.class(Sprite)
-function ExplosionSprite:init(scale)
+
+function ExplosionSprite.create(textures, scale)
+	local explosionSprite = ExplosionSprite.new()
 	
-	self.frames = {}
-	for i = 1, #icebolt_hit_explosion_textures, 1 do
-		local frame = Bitmap.new(icebolt_hit_explosion_textures[i])
+	explosionSprite.frames = {}
+	for i = 1, #textures, 1 do
+		local frame = Bitmap.new(textures[i])
 		frame:setAnchorPoint(0.5, 0.5)
 		frame:setScale(scale, scale)
 		frame:setBlendMode(Sprite.ADD)
-		self.frames[i] = frame
+		explosionSprite.frames[i] = frame
 	end
 	
-	self.currentFrame = 1
-	self.endFrame = #self.frames
+	explosionSprite.currentFrame = 1
+	explosionSprite.endFrame = #self.frames
 	
-	self.curentSubFrame = 0
-	self.endSubFrame = 5
+	explosionSprite.curentSubFrame = 0
+	explosionSprite.endSubFrame = 5
 	
-	self:addEventListener(Event.ENTER_FRAME, self.update, self)
-	self:addChild(self.frames[self.currentFrame])
+	explosionSprite:addEventListener(Event.ENTER_FRAME, explosionSprite.Update, explosionSprite)
+	explosionSprite:addChild(explosionSprite.frames[explosionSprite.currentFrame])
 	
+	return explosionSprite
 end
 
-function ExplosionSprite:update()
+function ExplosionSprite:Update()
 	self.curentSubFrame = self.curentSubFrame + 1
 	if self.curentSubFrame == self.endSubFrame then
 		self:removeChild(self.frames[self.currentFrame])

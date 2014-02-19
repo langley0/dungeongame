@@ -128,11 +128,13 @@ function Pad:OnTouchBegin(event, player, world)
 		if skill.fire_off_image:hitTestPoint(event.touch.x, event.touch.y) then 
 		
 			if skill.skill.type == "charge" then
-				skill.touchid = event.touch.id
-				skill.skill:Activate()
-				
-				self:removeChild(skill.fire_off_image)
-				self:addChild(skill.fire_on_image)
+				if not skill.skill.activate then
+					skill.touchid = event.touch.id
+					skill.skill:Activate()
+					
+					self:removeChild(skill.fire_off_image)
+					self:addChild(skill.fire_on_image)
+				end
 			elseif skill.skill.type == "action" then
 				skill.touchid = event.touch.id
 				if skill.skill:CanUse(player, world) then 

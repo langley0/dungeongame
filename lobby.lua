@@ -19,14 +19,17 @@ function Lobby.create()
 	hero[1] = Player.create("warrior")
 	hero[2] = Player.create("archer")
 	hero[3] = Player.create("wizard")
+	hero[4] = Player.create("spaceman")
 	
-	hero[1]:setPosition(400, 300)
-	hero[2]:setPosition(600, 300)
-	hero[3]:setPosition(800, 300)
+	hero[1]:setPosition(300, 300)
+	hero[2]:setPosition(500, 300)
+	hero[3]:setPosition(700, 300)
+	hero[4]:setPosition(900, 300)
 	
 	instance:addChild(hero[1])
 	instance:addChild(hero[2])
 	instance:addChild(hero[3])
+	instance:addChild(hero[4])
 	
 	instance.hero = hero
 	
@@ -35,15 +38,17 @@ function Lobby.create()
 	stats[1] = Sprite.new()
 	stats[2] = Sprite.new()
 	stats[3] = Sprite.new()
+	stats[4] = Sprite.new()
 	
 	for i = 1, #hero do 
 		local name = CreateText(hero[i].name)
 		name:setTextColor(0xffffff)
 		stats[i]:addChild(name)
 	end 
-	stats[1]:setPosition(400 - 50, 400)
-	stats[2]:setPosition(600 - 50, 400)
-	stats[3]:setPosition(800 - 50, 400)
+	stats[1]:setPosition(300 - 50, 400)
+	stats[2]:setPosition(500 - 50, 400)
+	stats[3]:setPosition(700 - 50, 400)
+	stats[4]:setPosition(900 - 50, 400)
 	
 	instance.hero_stat = stats
 	return instance

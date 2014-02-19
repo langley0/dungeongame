@@ -2,7 +2,11 @@
  <properties autorotation="0" encryptAssets="0" fps="60" scaleMode="3" mouseToTouch="1" iosDevice="0" packageName="com.yourdomain.yourapp" logicalHeight="1280" logicalWidth="720" mouseTouchOrder="0" encryptCode="0" retinaDisplay="0" touchToMouse="1" assetsOnly="0" orientation="1" architecture="0">
   <imageScales/>
  </properties>
+ <file source="Vector2.lua"/>
+ <file source="collision.lua"/>
  <folder name="skill">
+  <file source="energyball.lua"/>
+  <file source="laserbeam.lua"/>
   <file source="frozenorb.lua"/>
   <file source="icebolt.lua"/>
   <file source="bow_multishot.lua"/>
@@ -38,6 +42,12 @@
   <file source="mission_clear.png"/>
  </folder>
  <folder name="weapon">
+  <folder name="laserbeam">
+   <file source="laserbeam_bot.png"/>
+   <file source="laserbeam_top.png"/>
+   <file source="laserbeam_mid.png"/>
+  </folder>
+  <file source="energyball.png"/>
   <folder name="frozenorb">
    <file source="frozenorb_1.png"/>
    <file source="frozenorb_0.png"/>
@@ -65,6 +75,7 @@
   <file source="button_default.png"/>
  </folder>
  <folder name="player">
+  <file source="spaceman.png"/>
   <file source="warrior.png"/>
   <file source="archer.png"/>
   <file source="wizard.png"/>
