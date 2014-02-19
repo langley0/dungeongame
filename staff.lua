@@ -165,7 +165,7 @@ function ExplosionSprite:Update()
 end
 
 function ExplosionSprite:SelfDestroy()
-	self:removeEventListener(Event.ENTER_FRAME, self.update, self)
+	self:removeEventListener(Event.ENTER_FRAME, self.Update, self)
 	self:removeFromParent()
 	--self:removeChild(self.frames[self.currentFrame])
 	--self.frames = nil
