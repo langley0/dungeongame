@@ -19,24 +19,52 @@ function Pad.create()
 
 	p.show = false
 	
+	p.skills = {}
 	
+	local skill1 = {}
+	local skill2 = {}
+	
+	p.skills[1] = skill1
+	p.skills[2] = skill2
 	
 	local texture = Texture.new("pad/fire_button.png")
-	local fire_off = Bitmap.new(TextureRegion.new(texture, 0, 0, 96,96))
-	local fire_on = Bitmap.new(TextureRegion.new(texture, 96, 0, 96,96))
+	do 
+		local fire_off = Bitmap.new(TextureRegion.new(texture, 0, 0, 96,96))
+		local fire_on = Bitmap.new(TextureRegion.new(texture, 96, 0, 96,96))
+		
+		fire_off:setAnchorPoint(0.5,0.5)
+		fire_off:setScale(1.5,1.5)
+		fire_off:setPosition(850, 550)
+		
+		fire_on:setAnchorPoint(0.5,0.5)
+		fire_on:setScale(1.5,1.5)
+		fire_on:setPosition(850, 550)
+		
+		skill1.fire_off_image = fire_off
+		skill1.fire_on_image = fire_on
+		skill1.fire_on = nil
+	end 
+
+	do 
+		local fire_off = Bitmap.new(TextureRegion.new(texture, 0, 0, 96,96))
+		local fire_on = Bitmap.new(TextureRegion.new(texture, 96, 0, 96,96))
+		
+		fire_off:setAnchorPoint(0.5,0.5)
+		fire_off:setScale(1.5,1.5)
+		fire_off:setPosition(1050, 550)
+		
+		fire_on:setAnchorPoint(0.5,0.5)
+		fire_on:setScale(1.5,1.5)
+		fire_on:setPosition(1050, 550)
+		
+		skill2.fire_off_image = fire_off
+		skill2.fire_on_image = fire_on
+		skill2.fire_on = nil
+	end
 	
-	fire_off:setScale(1.5,1.5)
-	fire_off:setPosition(1050, 550)
 	
-	fire_on:setScale(1.5,1.5)
-	fire_on:setPosition(1050, 550)
-	
-	
-	
-	p.fire_off_image = fire_off
-	p.fire_on_image = fire_on
-	p.fire_on = nil
-	p:addChild(p.fire_off_image)
+	p:addChild(skill1.fire_off_image)
+	p:addChild(skill2.fire_off_image)
 	
 	
 	return p
@@ -93,23 +121,76 @@ function Pad:SetStick(x, y)
 
 end 
 
-function Pad:StartFire(id)
-	if self.fire_on then 
-		-- go on 
-	else 
-		self:removeChild(self.fire_off_image)
-		self:addChild(self.fire_on_image)
+function Pad:OnTouchBegin(event, player, world)
+	
+	for i = 1, #self.skills do
+		local skill = self.skills[i]
+		if skill.fire_off_image:hitTestPoint(event.touch.x, event.touch.y) then 
 		
-		self.fire_on = id
+			if skill.skill.type == "charge" then
+				skill.touchid = event.touch.id
+				skill.skill:Activate()
+				
+				self:removeChild(skill.fire_off_image)
+				self:addChild(skill.fire_on_image)
+			elseif skill.skill.type == "action" then
+				skill.touchid = event.touch.id
+				skill.skill:Use(player, world)
+				
+				self:removeChild(skill.fire_off_image)
+				self:addChild(skill.fire_on_image)
+			end 
+			
+			return true
+		end 
+	end 
+	
+	return false
+	
+end 
+
+function Pad:OnTouchEnd(event)
+
+	for i = 1, #self.skills do
+		local skill =self.skills[i]
+		if skill.touchid == event.touch.id then 
+			if skill.skill.activate then 
+				skill.skill:Deactivate()
+			end 
+			
+			self:removeChild(skill.fire_on_image)
+			self:addChild(skill.fire_off_image)
+			
+			skill.touchid = nil
+		end 
 	end 
 end 
 
-function Pad:StopFire(id)
-	if self.fire_on == id then 
-		-- go on 
-		self:removeChild(self.fire_on_image)
-		self:addChild(self.fire_off_image)
+function Pad:AssignSkill(index, skill)
+
+	local _skill = self.skills[index]
+	_skill.skill = skill
+	if skill.type == "autopassive" then 
+		-- 패시브 상태로 만든다
+		local auto_text = CreateSmallText("AUTO")
+		auto_text:setPosition(-auto_text:getWidth() / 2, 70)
+		auto_text:setTextColor(0xffffff)
 		
-		self.fire_on = nil
+		
+		self:removeChild(_skill.fire_off_image)
+		self:addChild(_skill.fire_on_image)
+		
+		_skill.fire_on_image:addChild(auto_text)
 	end 
+	
+	local name_text = CreateSmallText(skill.name)
+	name_text:setPosition(-name_text:getWidth() / 2, 0)
+	name_text:setTextColor(0xffffff)
+	
+	local name_text2 = CreateSmallText(skill.name)
+	name_text2:setPosition(-name_text2:getWidth() / 2, 0)
+	name_text2:setTextColor(0xffffff)
+	
+	_skill.fire_on_image:addChild(name_text)
+	_skill.fire_off_image:addChild(name_text2)
 end 

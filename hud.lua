@@ -35,5 +35,6 @@ function PlayerHUD:Update(event)
 	if self.player then 
 		-- hp 와 stamina 의 상태를 체크한다
 		self.hp_bar:setScale(self.player.hp / self.player.hp_max, 1)
+		self.stamina_bar:setScale(self.player.stamina / self.player.stamina_max, 1)
 	end 
 end 
