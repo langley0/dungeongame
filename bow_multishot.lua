@@ -46,7 +46,7 @@ function Bow_Multishot:Use(invoker, world)
 	
 	-- 화살을 발사한다
 	local x2, y2 = invoker:getPosition()
-	local target = world:GetClosestEnemyFrom(x2, y2)
+	local target = world:GetClosestEnemyFrom(x2, y2, invoker.direction.rad)
 	local x, y
 	
 	if target then 
