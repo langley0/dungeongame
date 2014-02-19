@@ -59,6 +59,11 @@ function World:EnterPlayer(player)
 	
 	self.hud:SetPlayer(player)
 	
+	
+	for i = 1, #player.skills do
+		self.pad:AssignSkill(i, player.skills[i])
+	end 
+	
 	player:addEventListener(Event.ENTER_FRAME, player.Update, player)
 end 
 
@@ -229,15 +234,11 @@ end
 
 function World:TouchBegin(event)
 	
-	-- 화면의 오른쪽 3/1 에서 터치가 되었나?
-	-- 터치 시작
-	--self.control = { x = event.touch.x, y = event.touch.y }
-	if event.touch.x < 750 then 
+	if self.pad:OnTouchBegin(event, self.player, self) then 
+		-- 터치..
+	else 
 		self.stickid = event.touch.id
 		self.pad:ShowStick(event.touch.x  , event.touch.y)
-	elseif event.touch.x > 850 then
-		-- 무기를 발사한다
-		self.pad:StartFire(event.touch.id)
 	end
 	
 end
@@ -256,7 +257,7 @@ function World:TouchEnd(event)
 		self.player:Stop()
 		self.pad:Hide()
 	end 
-	self.pad:StopFire(event.touch.id)
+	self.pad:OnTouchEnd(event)
 end
 
 

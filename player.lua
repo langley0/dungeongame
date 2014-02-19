@@ -60,6 +60,12 @@ local function init_archer(self)
 	
 	self.hp_max = 100
 	self.hp = self.hp_max
+	
+	self.stamina_max = 100
+	self.stamina = self.stamina_max
+	self.stamina_recovery = 10
+	self.last_stamina_used = 0
+	
 	self.str =1 
 	self.int = 1
 	self.def = 1
@@ -68,8 +74,15 @@ local function init_archer(self)
 	self.recharge = 0
 	self.c_speed = 100
 	
-	self.weapon = Bow.create(self)
+	-- 스킬 설정 
+	self.skill_A = Bow_BasicAttack.create()
+	self.skill_B = Bow_Multishot.create()
 	
+	self.skills = {}
+	self.skills[1] = self.skill_A
+	self.skills[2] = self.skill_B
+	
+	-- 텍스쳐 설정
 	local p_texture = Texture.new("player/archer.png")
 	local bitmaps = {
 		Bitmap.new(TextureRegion.new(p_texture, 0,0,16,16)),
@@ -101,6 +114,13 @@ local function init_wizard(self)
 	
 	self.hp_max = 100
 	self.hp = self.hp_max
+	
+	self.stamina_max = 100
+	self.stamina = self.stamina_max
+	self.stamina_recovery = 10
+	self.last_stamina_used = 0
+	
+	
 	self.str =1 
 	self.int = 1
 	self.def = 1
@@ -109,8 +129,15 @@ local function init_wizard(self)
 	self.recharge = 0
 	self.c_speed = 100
 	
-	self.weapon = Staff.create(self)
+	-- 스킬 설정 
+	self.skill_A = Magic_IceBolt.create()
+	self.skill_B = Magic_FrozenOrb.create()
 	
+	self.skills = {}
+	self.skills[1] = self.skill_A
+	self.skills[2] = self.skill_B
+
+	---
 	local p_texture = Texture.new("player/wizard.png")
 	local bitmaps = {
 		Bitmap.new(TextureRegion.new(p_texture, 0,0,16,16)),
@@ -208,26 +235,53 @@ function Player:Update(event)
 		-- 라이트 위치를 업데이트
 		self.light:setPosition(x, y)
 	end 
-
-	if  self.weapon:CanFire() then 
-		
-		-- 가장 가까운 적을 찾는다
-		local enemy = world:GetClosestEnemyFrom(x, y)
-		if enemy then 
-			
-			local ex, ey = enemy:getPosition()
-			local _dx = ex - x
-			local _dy = ey - y
-		
-			-- 무기 사거리 안에 있는가?
-			local distance = math.sqrt(_dx*_dx + _dy*_dy)
-			if distance < self.weapon:GetRange() then 
-				self.weapon:Fire(self, enemy, world)
+	
+	-- 스킬사용을 확인한다
+	local charge_skill_used
+	for i = 1, #self.skills do 
+		local skill = self.skills[i]
+		if skill.activate then 
+			-- 차지스킬이다!
+			if skill:CanUse(self, world) then 
+				
+				skill:Use(self, world)
+				-- 차지 스킬은 두개를 동시에 쓸일이 있나?
+				charge_skill_used = true
+				-- 스태미너 처리
+				self.stamina = self.stamina - skill.stamina
+				self.last_stamina_used = event.time
+	
+				break
 			end 
 		end 
 	end 
 	
-	self.weapon:Update(event.deltaTime)
+	if charge_skill_used then 
+		-- 
+	else 
+		-- 기본 오토 패시브 스킬을 사용한다
+		for i = 1, #self.skills do 
+			local skill = self.skills[i]
+			if skill.type == "autopassive" then 
+				-- 오토 스킬사용
+				if skill:CanUse() then 
+					skill:Use(self, world)
+				end 
+			end
+		end
+	end 
+	
+	for i = 1, #self.skills do 
+		local skill = self.skills[i]
+		skill:Update(event.deltaTime)
+	end
+	
+	-- 스태미너 회복
+	if self.stamina < self.stamina_max and 
+		self.last_stamina_used + 5 <=  event.time then 
+		-- 스태미너 회복을 시작한다
+		self.stamina = math.min(self.stamina_max, self.stamina + self.stamina_recovery * event.deltaTime)
+	end 
 end 
 
 
