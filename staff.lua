@@ -39,9 +39,9 @@ function Staff:Fire(invoker, target, world)
 	end 
 	
 	-- 스피드를 곱해서 적당히 발사하자
-	local arrow = IceBolt.create(dx, dy, self.flying_speed, self.distance, invoker, world)
-	arrow:setPosition(x2, y2)
-	world.effect_layer:addChild(arrow)
+	local icebolt = IceBolt.create(dx, dy, self.flying_speed, self.distance, invoker, world)
+	icebolt:setPosition(x2, y2)
+	world.effect_layer:addChild(icebolt)
 	
 	self.cooltime = self.delay
 	--[[
@@ -53,7 +53,6 @@ function Staff:Fire(invoker, target, world)
 end 
 
 local icebolt_texture = Texture.new("weapon/icebolt.png")
-
 
 IceBolt = Core.class(Sprite)
 function IceBolt.create(x, y, speed, distance, invoker, world)
@@ -101,15 +100,10 @@ function IceBolt:Update(event)
 	
 	if enemy then 
 	
-		local enemies = world:GetAllEnemyInRange(x2, y2, self.hitRadius)
-	
-		-- 각 enemy마다 대미지 계산
-		for i = 1, #enemies, 1 do
-			world:Hit(enemies[i], self.damage)
-		end
+		world:HitRange(x2, y2, self.hitRadius, self.damage)
 		
 		-- 폭! 발! 효과 만들고
-		self:makeHitExplosion()
+		self:MakeHitExplosion()
 		
 		-- 사라진다
 		self:removeEventListener(Event.ENTER_FRAME, self.Update, self)
@@ -150,12 +144,12 @@ function ExplosionSprite:init(scale)
 	self.curentSubFrame = 0
 	self.endSubFrame = 5
 	
-	self:addEventListener(Event.ENTER_FRAME, self.update, self)
+	self:addEventListener(Event.ENTER_FRAME, self.Update, self)
 	self:addChild(self.frames[self.currentFrame])
 	
 end
 
-function ExplosionSprite:update()
+function ExplosionSprite:Update()
 	self.curentSubFrame = self.curentSubFrame + 1
 	if self.curentSubFrame == self.endSubFrame then
 		self:removeChild(self.frames[self.currentFrame])
@@ -163,24 +157,110 @@ function ExplosionSprite:update()
 		self.curentSubFrame = 0
 		
 		if self.currentFrame > self.endFrame then
-			self:selfDestroy()
+			self:SelfDestroy()
 		else
 			self:addChild(self.frames[self.currentFrame])
 		end
 	end
 end
 
-function ExplosionSprite:selfDestroy()
+function ExplosionSprite:SelfDestroy()
 	self:removeEventListener(Event.ENTER_FRAME, self.update, self)
 	self:removeFromParent()
 	--self:removeChild(self.frames[self.currentFrame])
 	--self.frames = nil
 end
 
-
-function IceBolt:makeHitExplosion()
+function IceBolt:MakeHitExplosion()
 	local x, y = self:getPosition()
 	local explosionSprite = ExplosionSprite.new(self.explosionSize)
 	explosionSprite:setPosition(x, y)
 	self:getParent():addChild(explosionSprite)
 end
+
+local frozenOrb_texture = Texture.new("weapon/magicbolt.png")
+
+FrozenOrb = Core.class(Sprite)
+function FrozenOrb.create(x, y, speed, distance, invoker, world)
+	
+	local frozenOrb = FrozenOrb.new()
+	
+	frozenOrb.image = Bitmap.new(frozenOrb_texture)
+	frozenOrb.image:setAnchorPoint(0.5, 0.5)
+	frozenOrb.image:setRotation(math.deg(math.atan2(y, x)))
+	frozenOrb.image:setBlendMode(Sprite.ADD)
+	frozenOrb:addChild(frozenOrb.image)
+	
+	-- 타겟방향으로 날라간다
+	frozenOrb.moving = { x = x, y = y, speed = speed, distance = distance }
+	frozenOrb.world = world
+	
+	frozenOrb:addEventListener(Event.ENTER_FRAME, frozenOrb.Update, frozenOrb)
+	frozenOrb.flying_distance = 0
+	
+	frozenOrb.invoker = invoker
+	
+	frozenOrb.currentFrame = 0
+	frozenOrb.fireFrame = 5
+	
+	return frozenOrb
+	
+end
+
+function FrozenOrb:Update()
+	local x, y = self:getPosition()
+	
+	local distance = self.moving.speed *event.deltaTime
+	
+	-- 오브가 날라간다
+	local x2 = self.moving.x * distance + x
+	local y2 = self.moving.y * distance + y
+	
+	self:setPosition(x2, y2)
+	
+	-- 정해진 간격으로 아이스볼트를 발사한다.
+	self.currentFrame = self.currentFrame + 1
+	
+	self.flying_distance = self.flying_distance + distance
+	if self.flying_distance > self.moving.distance then 
+		-- 사거리가 넘어가면 사라진다
+		self:removeEventListener(Event.ENTER_FRAME, self.Update, self)
+		self:getParent():removeChild(self)
+	elseif self.currentFrame == self.fireFrame then
+		self.currentFrame = 0
+		self:Fire()
+	end
+end
+
+function FrozenOrb:Fire() -- 타겟이 없잖아..?
+	
+	-- 8방향? 으로 아이스볼트를 발사한다.
+	
+	--[[
+	-- 아이스볼트를 발사한다
+	local x, y = target:getPosition()
+	local x2, y2 = self:getPosition()
+	
+	local dx = x - x2
+	local dy = y - y2
+	
+	local length = math.sqrt(dx*dx + dy*dy)
+	--if length > self.distance then return end
+	
+	if length < 0.1 then 
+		-- 너무 붙어있다. 화살을 적당히 발사하자
+		dx = 1
+		dy = 0
+	else 
+		dx = dx / length
+		dy = dy / length
+	end 
+	
+	-- 스피드를 곱해서 적당히 발사하자
+	local arrow = IceBolt.create(dx, dy, self.invoker.flying_speed, self.invoker.distance, self.invoker, self.world)
+	arrow:setPosition(x2, y2)
+	world.effect_layer:addChild(arrow)
+	]]
+end
+
+
