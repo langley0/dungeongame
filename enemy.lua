@@ -42,20 +42,24 @@ function Enemy.create(world, type)
 		e.hpmax = 20
 		e.speed = 50
 		e.exp = 1
+		e.attack_delay = 3
 	elseif type == 2 then 
 		e.hp = 40
 		e.hpmax = 40
 		e.speed = 50
 		e.exp = 2
+		e.attack_delay = 3
 	elseif type == 3 then 
 		e.hp = 80
 		e.hpmax = 80
 		e.speed = 150
 		e.exp = 4
+		e.attack_delay = 3
 	end
 		
 	e.world = world
 	e.attack_sqrt = 64*64*1.5
+	e.attack_cooltime = 0
 	
 	
 	e:addEventListener(Event.ENTER_FRAME, e.Update, e)
@@ -263,9 +267,22 @@ function Enemy:Update(event)
 	local world = self.world
 	local x, y = self:getPosition()
 	
-	-- 이동을 한다
+	if self.knockback then 
+		
+		local x2 = self.knockback.dx * event.deltaTime + x
+		local y2 = self.knockback.dy * event.deltaTime + y
+		
+		self:setPosition(x2, y2)
+		
+		-- 넉백은 모든 액션에서 최우선이다
+		self.knockback.time = self.knockback.time +  event.deltaTime
+		if self.knockback.time >= self.knockback.duration then 
+			self.knockback = nil -- 넉백은 끝났다
+		end 
+		
+		
 	
-	if self.moving then 
+	elseif self.moving then 
 		
 		-- from 에서 to 로 이동하자,
 		
@@ -306,8 +323,14 @@ function Enemy:Update(event)
 		local attack_range = 64
 		
 		if (px - x)* (px - x) + (py - y)*(py - y) < attack_range*attack_range then 
-			-- 공격을 한다
-			world:HitPlayer(5)
+		
+			if self.attack_cooltime <= 0 then 
+				-- 공격을 한다
+				world:HitPlayer(5)
+				self.attack_cooltime = self.attack_delay
+			else
+				self.attack_cooltime = self.attack_cooltime - event.deltaTime
+			end 
 		else 
 			-- 플레이어를 향해 움직인다
 			self:MoveToPlayer(player)
@@ -337,5 +360,5 @@ end
 
 function Enemy:Knockback(dx, dy)
 	-- 현재 위치에서 x, y 만큼 넉백시킨다
-	self.knockback = { dx = x, dy = y}
+	self.knockback = { dx = dx, dy = dy, duration = 0.05, time = 0}
 end 

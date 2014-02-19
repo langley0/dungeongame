@@ -24,8 +24,6 @@ function World.create()
 	w:addEventListener(Event.TOUCHES_MOVE, w.TouchMove, w)
 	w:addEventListener(Event.TOUCHES_END, w.TouchEnd, w)
 	
-	w.pad = Pad.create()
-	
 	w.enemies = {}
 	w.current_level = 0
 	
@@ -40,7 +38,11 @@ function World.create()
 	w:addChild(w.layers)
 	
 	-- ui
+	w.pad = Pad.create()
+	w.hud = PlayerHUD.create()
+	
 	w:addChild(w.pad)
+	w:addChild(w.hud)
 	return w
 
 end 
@@ -54,6 +56,8 @@ function World:EnterPlayer(player)
 	player:Warp(16,16)
 	self:AddLight(player.light)
 	self.character_layer:addChild(player)
+	
+	self.hud:SetPlayer(player)
 	
 	player:addEventListener(Event.ENTER_FRAME, player.Update, player)
 end 
