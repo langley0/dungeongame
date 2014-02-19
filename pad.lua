@@ -66,6 +66,8 @@ function Pad.create()
 	p:addChild(skill1.fire_off_image)
 	p:addChild(skill2.fire_off_image)
 	
+	p:addEventListener(Event.ENTER_FRAME,p.Update, p)
+	
 	
 	return p
 end
@@ -90,6 +92,7 @@ function Pad:Hide()
 		self.show = false
 		self.dx = nil
 		self.dy = nil
+		self.lastevent = nil
 	end
 end
 
@@ -97,12 +100,14 @@ function Pad:SetStick(x, y)
 	if self.show then 
 		local cx, cy = self.stick_base:getPosition()
 		
+		self.lastevent = { x = x, y = y }
+		
 		-- 방향을 잡고 노멀라이즈 한다
 		local dx = x - cx
 		local dy = y - cy
 		
 		local length = math.sqrt(dx*dx + dy*dy)
-		if length < 5 then 
+		if length < 1 then 
 			dx = 0
 			dy = 0
 		else 
@@ -110,7 +115,11 @@ function Pad:SetStick(x, y)
 			dy = dy / length
 		end 
 		
-		self.stick:setPosition(dx * 60, dy *60)
+		length = math.min(length, 60)
+		
+		self.stick:setPosition(dx * length, dy *length)
+		dx = dx * length / 60
+		dy = dy * length / 60
 		self.dx = dx
 		self.dy = dy
 		
@@ -196,3 +205,24 @@ function Pad:AssignSkill(index, skill)
 	_skill.fire_on_image:addChild(name_text)
 	_skill.fire_off_image:addChild(name_text2)
 end 
+
+function Pad:Update(event)
+	
+	-- 패드의 중심을 현재 터치한곳으로 조금씩 이동시킨다
+	if self.lastevent then 
+		-- 현재 중심에서 마지막터치한 곳으로의 이동값
+		local x, y = self.stick_base:getPosition()
+		local dx = self.lastevent.x - x 
+		local dy = self.lastevent.y - y
+		
+		local length = math.sqrt(dx*dx + dy*dy)
+		if length > 60 then 
+			-- 이동을 한다
+			x = x + event.deltaTime * dx / length * 128
+			y = y + event.deltaTime * dy / length * 128
+			
+			self.stick_base:setPosition(x, y)
+		end
+	end 
+
+end

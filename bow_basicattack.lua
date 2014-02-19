@@ -31,7 +31,7 @@ function Bow_BasicAttack:Use(invoker, world)
 	
 	local x2, y2 = invoker:getPosition()
 	
-	local target = world:GetClosestEnemyFrom(x2, y2)
+	local target = world:GetClosestEnemyFrom(x2, y2, invoker.direction.rad)
 	if target == nil then return end 
 	
 	-- 화살을 발사한다

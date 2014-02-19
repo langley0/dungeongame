@@ -56,8 +56,9 @@ function World:EnterPlayer(player)
 	player:Warp(16,16)
 	self:AddLight(player.light)
 	self.character_layer:addChild(player)
-	
 	self.hud:SetPlayer(player)
+	
+	player:addChild(player.direction.image)
 	
 	
 	for i = 1, #player.skills do
@@ -124,6 +125,43 @@ function World:GetClosestEnemyFrom(x, y)
 	
 	return found
 end 
+
+function World:GetClosestEnemyFrom2(x, y, rad)
+	
+	local found 
+	local length = 9999999
+
+	-- 주어진 좌표에서 가장 가까운 적을 찾는다, 주어진 rad 와 큰차이가 없어야 한다.
+	for i = 1, #self.enemies do 
+		local enemy = self.enemies[i]
+		local ex, ey = enemy:getPosition()
+		
+		local dx = ex - x
+		local dy = ey - y 
+		
+		local d_rad = math.atan2(dy, dx) - rad
+		while d_rad  < -math.pi do
+			d_rad = d_rad + math.pi*2
+		end 
+		
+		while d_rad  > math.pi do
+			d_rad = d_rad - math.pi*2
+		end 
+		
+		
+		if math.abs(d_rad ) < math.pi / 6 then 
+			print(math.atan2(dy, dx) .."-"..rad.."="..d_rad)
+			local l_sqr = dx*dx + dy*dy
+			if l_sqr < length then 
+				found = enemy 
+				length = l_sqr
+			end 
+		end
+	end 
+	
+	return found
+end 
+
 
 function World:GetEnemyOnPosition(x, y)
 
@@ -244,8 +282,18 @@ function World:TouchBegin(event)
 	else 
 		self.stickid = event.touch.id
 		self.pad:ShowStick(event.touch.x  , event.touch.y)
+		
+		-- 디렉션설정
+		do 
+			local lx, ly = self.layers:getPosition()
+			local px, py = self.player:getPosition()
+			
+			local dx = event.touch.x - px - lx
+			local dy = event.touch.y - py - ly 
+			self.player.direction.x = dx
+			self.player.direction.y = dy
+		end
 	end
-	
 end
 
 function World:TouchMove(event)
@@ -253,6 +301,16 @@ function World:TouchMove(event)
 	if event.touch.id == self.stickid then 
 		local dx, dy = self.pad:SetStick(event.touch.x, event.touch.y)
 		self.player:Move2(dx, dy)
+	end 
+	
+	-- 디렉션설정
+	do 
+		local lx, ly = self.layers:getPosition()
+		local px, py = self.player:getPosition()
+		local dx = event.touch.x - px - lx
+		local dy = event.touch.y - py - ly
+		self.player.direction.x = dx
+		self.player.direction.y = dy
 	end 
 end
 

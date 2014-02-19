@@ -181,6 +181,13 @@ function Player.create(type)
 	p.attack_delay = 0
 	p.speed = 400
 	
+	-- 방향 표시기
+	local d_bitmap = Bitmap.new(Texture.new("player/direction.png"))
+	d_bitmap:setAnchorPoint(0.5,0.5)
+	d_bitmap:setAlpha(0.5)
+	
+	p.direction = { x = 1, y = 0, rad = 0, image =  d_bitmap}
+	
 	return p
 end 
 
@@ -201,6 +208,7 @@ function Player:Move2(x, y)
 		self:Stop()
 	else 
 		self.moving2 = { dx = x, dy = y }
+		
 		if self.stopped then 
 			self.movie:play()
 			self.stopped = false
@@ -220,6 +228,13 @@ function Player:Update(event)
 	
 	local world = self.world
 	local x, y = self:getPosition()
+	
+	-- 방향업데이트
+	if self.direction then 
+		local theta = math.atan2(self.direction.y, self.direction.x)
+		self.direction.rad = theta
+		self.direction.image:setRotation(math.deg(self.direction.rad))
+	end 
 	
 	-- 이동을 한다
 	if self.moving2 then 

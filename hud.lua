@@ -20,7 +20,7 @@ function PlayerHUD.create()
 	hud:addChild(hud.stamina_bar)
 	
 	hud:addEventListener(Event.ENTER_FRAME, hud.Update, hud)
-	hud:setPosition(50,620)
+	hud:setPosition(50,30)
 	
 	return hud
 end 

@@ -1,5 +1,5 @@
 <project>
- <properties autorotation="0" encryptAssets="0" fps="60" scaleMode="3" mouseToTouch="1" iosDevice="0" packageName="com.yourdomain.yourapp" logicalHeight="1280" logicalWidth="720" mouseTouchOrder="0" encryptCode="0" retinaDisplay="0" touchToMouse="1" assetsOnly="0" orientation="1" architecture="0">
+ <properties autorotation="0" encryptAssets="0" fps="60" scaleMode="3" mouseToTouch="1" iosDevice="0" packageName="com.nexon.devcat.dungeon" logicalHeight="1280" logicalWidth="720" mouseTouchOrder="0" encryptCode="0" retinaDisplay="0" touchToMouse="1" assetsOnly="0" orientation="1" architecture="1">
   <imageScales/>
  </properties>
  <folder name="skill">
@@ -55,7 +55,7 @@
   <file source="sword.lua"/>
   <file source="bow.lua"/>
  </folder>
- <folder name="Text">
+ <folder name="text">
   <file source="textout.lua"/>
   <file source="mtcg.ttf"/>
  </folder>
@@ -65,13 +65,14 @@
   <file source="button_default.png"/>
  </folder>
  <folder name="player">
+  <file source="direction.png"/>
   <file source="warrior.png"/>
   <file source="archer.png"/>
   <file source="wizard.png"/>
   <file source="player_light.png"/>
   <file source="player.lua"/>
  </folder>
- <folder name="Intro">
+ <folder name="intro">
   <file source="lobby_selection.png"/>
   <file source="lobby.lua"/>
  </folder>
