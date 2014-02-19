@@ -202,12 +202,17 @@ function World:HitRange(x, y, radius, damage)
 	for i = 1, #result do 
 		local enemy = result[i]
 		
+		self:Hit(enemy, damage)
+		--[[
 		enemy.hp = enemy.hp - damage
+		enemy:ShowHP()
+		enemy.damage_text:AddText(damage)
 	
 		if enemy.hp <= 0 then 
 			self:RemoveMonster(enemy)
 			enemy:Die()
 		end 
+		]]
 	end 
 	
 end 

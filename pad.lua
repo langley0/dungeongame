@@ -135,7 +135,9 @@ function Pad:OnTouchBegin(event, player, world)
 				self:addChild(skill.fire_on_image)
 			elseif skill.skill.type == "action" then
 				skill.touchid = event.touch.id
-				skill.skill:Use(player, world)
+				if skill.skill:CanUse(player, world) then 
+					skill.skill:Use(player, world)
+				end
 				
 				self:removeChild(skill.fire_off_image)
 				self:addChild(skill.fire_on_image)

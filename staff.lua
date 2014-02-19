@@ -52,6 +52,7 @@ function Staff:Fire(invoker, target, world)
 	]]
 end 
 
+--[[
 local icebolt_texture = Texture.new("weapon/icebolt.png")
 
 IceBolt = Core.class(Sprite)
@@ -234,33 +235,7 @@ end
 
 function FrozenOrb:Fire() -- 타겟이 없잖아..?
 	
-	-- 8방향? 으로 아이스볼트를 발사한다.
-	
-	--[[
-	-- 아이스볼트를 발사한다
-	local x, y = target:getPosition()
-	local x2, y2 = self:getPosition()
-	
-	local dx = x - x2
-	local dy = y - y2
-	
-	local length = math.sqrt(dx*dx + dy*dy)
-	--if length > self.distance then return end
-	
-	if length < 0.1 then 
-		-- 너무 붙어있다. 화살을 적당히 발사하자
-		dx = 1
-		dy = 0
-	else 
-		dx = dx / length
-		dy = dy / length
-	end 
-	
-	-- 스피드를 곱해서 적당히 발사하자
-	local arrow = IceBolt.create(dx, dy, self.invoker.flying_speed, self.invoker.distance, self.invoker, self.world)
-	arrow:setPosition(x2, y2)
-	world.effect_layer:addChild(arrow)
-	]]
 end
 
+]]
 

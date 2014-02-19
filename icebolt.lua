@@ -58,9 +58,9 @@ function Magic_IceBolt:Use(invoker, world)
 	end 
 	
 	-- 스피드를 곱해서 적당히 발사하자
-	local arrow = IceBolt.create(dx, dy, self.flying_speed, self.distance, invoker, world)
-	arrow:setPosition(x2, y2)
-	world.effect_layer:addChild(arrow)
+	local icebolt = IceBolt.create(dx, dy, self.flying_speed, self.distance, invoker.level, world)
+	icebolt:setPosition(x2, y2)
+	world.effect_layer:addChild(icebolt)
 	
 	self.cooltime = self.delay
 end 
@@ -69,7 +69,7 @@ local icebolt_texture = Texture.new("weapon/icebolt.png")
 
 
 IceBolt = Core.class(Sprite)
-function IceBolt.create(x, y, speed, distance, invoker, world)
+function IceBolt.create(x, y, speed, distance, level, world)
 
 	local icebolt = IceBolt.new()
 	
@@ -82,14 +82,14 @@ function IceBolt.create(x, y, speed, distance, invoker, world)
 	-- 타겟방향으로 날라간다
 	icebolt.moving = { x = x, y = y, speed = speed, distance = distance }
 	icebolt.world = world
-	icebolt.damage = 6 + invoker.level * 2
+	icebolt.damage = 6 + level * 2
 	
 	icebolt:addEventListener(Event.ENTER_FRAME, icebolt.Update, icebolt)
 	icebolt.flying_distance = 0
 	
 	-- 영향 범위
-	icebolt.hitRadius = invoker.level * 1.5 -- 일단은 이렇게...
-	icebolt.explosionSize = invoker.level * 1.5
+	icebolt.hitRadius = level * 1.5 -- 일단은 이렇게...
+	icebolt.explosionSize = level * 1.5
 	
 	return icebolt
 
@@ -114,12 +114,7 @@ function IceBolt:Update(event)
 	
 	if enemy then 
 	
-		local enemies = world:GetAllEnemyInRange(x2, y2, self.hitRadius)
-	
-		-- 각 enemy마다 대미지 계산
-		for i = 1, #enemies, 1 do
-			world:Hit(enemies[i], self.damage)
-		end
+		world:HitRange(x2, y2, self.hitRadius, self.damage)
 		
 		-- 폭! 발! 효과 만들고
 		self:makeHitExplosion()
@@ -138,6 +133,13 @@ function IceBolt:Update(event)
 	end 
 	
 end 
+
+function IceBolt:makeHitExplosion()
+	local x, y = self:getPosition()
+	local explosionSprite = ExplosionSprite.new(self.explosionSize)
+	explosionSprite:setPosition(x, y)
+	self:getParent():addChild(explosionSprite)
+end
 
 local icebolt_hit_explosion_textures = {
 	Texture.new("weapon/icebolt_hit_explosion/icebolt_hit_0.png"),
@@ -190,10 +192,3 @@ function ExplosionSprite:selfDestroy()
 	--self.frames = nil
 end
 
-
-function IceBolt:makeHitExplosion()
-	local x, y = self:getPosition()
-	local explosionSprite = ExplosionSprite.new(self.explosionSize)
-	explosionSprite:setPosition(x, y)
-	self:getParent():addChild(explosionSprite)
-end

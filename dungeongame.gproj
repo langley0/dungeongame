@@ -38,6 +38,10 @@
   <file source="mission_clear.png"/>
  </folder>
  <folder name="weapon">
+  <folder name="frozenorb">
+   <file source="frozenorb_1.png"/>
+   <file source="frozenorb_0.png"/>
+  </folder>
   <file source="magicbolt.png"/>
   <folder name="icebolt_hit_explosion">
    <file source="icebolt_hit_2.png"/>
