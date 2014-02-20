@@ -310,6 +310,13 @@ function World:RemoveMonster(monster)
 	
 end
 
+function World:EnterFriend(friend)
+	-- 친구가 월드에 들어온다
+	self.character_layer:addChild(friend)
+	
+	friend:addEventListener(Event.ENTER_FRAME, friend.Update, friend)
+end 
+
 function World:Update(event)
 	self:CheckStageClear()
 end 

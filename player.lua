@@ -213,7 +213,37 @@ local function init_spaceman(self)
 	self.movie = movie
 	self.movie:stop()
 	self.stopped = true
+
+	--
+	self.friends = {}
+	self.AddFriend = function(self, newFriend)
+		-- 상호 연결
+		local index = #self.friends + 1
+		self.friends[index] = newFriend
+		
+		local midAngle = math.pi * 0.5
+		local angle = math.pi / 6 * math.ceil(index * 0.5)
+		if index % 2 == 1 then
+			angle = midAngle - angle
+		else
+			angle = midAngle + angle
+		end
+		local distance = 60
+		local dx, dy = distance * math.cos(angle), distance * math.sin(angle)
+		
+		newFriend:AddLinkToPlayer(self, dx, dy)
+		newFriend:SetNearnessToPlayer(false)
+	end
+		
+	self.GetFriends = function(self)
+		return self.friends
+	end
 	
+	self.LevelUpProcedure = function(self)
+		local newFriend = SpaceFriend.create()
+		self:AddFriend(newFriend)
+		self.world:EnterFriend(newFriend)
+	end
 end 
 
 function Player.create(type)
@@ -369,6 +399,9 @@ function Player:AddExp(exp)
 		local effect = TimeEffect.create(lvup_texture, 3, Sprite.ADD)
 		self:addChild(effect) -- 알아서 파괴된다
 		
+		if self.LevelUpProcedure then
+			self:LevelUpProcedure()
+		end
 		
 		max = LevelTable[self.level]
 	end 

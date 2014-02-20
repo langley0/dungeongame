@@ -7,7 +7,7 @@ function Science_LaserBeam.create()
 	laserbeam.delay = 1.0
 	laserbeam.cooltime = 0
 	laserbeam.distance = 300
-	laserbeam.flying_speed = 50
+	laserbeam.flying_speed = 600
 	laserbeam.type = "charge"
 	
 	laserbeam.activate = false
@@ -77,7 +77,17 @@ function Science_LaserBeam:Use(invoker, world)
 			dy = dy / length
 		end
 		
-		self.currentLaserbeam = LaserBeam.create(dx, dy, 1, self.flying_speed, self.distance, self.delay + 0.05, invoker, world)
+		local widthScale = 1
+		if invoker.GetFriends then
+			local friends = invoker:GetFriends()
+			widthScale = widthScale + #friends * 0.5
+			
+			for i = 1, #friends do
+				friends[i]:SetNearnessToPlayer(true)
+			end
+		end
+		
+		self.currentLaserbeam = LaserBeam.create(dx, dy, widthScale, self.flying_speed, self.distance, self.delay + 0.05, invoker, world)
 		self.currentLaserbeam:setPosition(x2, y2)
 		world.effect_layer:addChild(self.currentLaserbeam)
 	end
@@ -115,9 +125,11 @@ function LaserBeam.create(dx, dy, widthScale, speed, distance, disappearTime, in
 	laserbeam:addChild(laserbeam.botSprite)
 	
 	laserbeam.topSprite:setAnchorPoint(0.5, 1)
+	laserbeam.topSprite:setScaleY(widthScale)
 	laserbeam.midSprite:setAnchorPoint(0.5, 1)
 	laserbeam.midSprite:setScaleY(0)
 	laserbeam.botSprite:setAnchorPoint(0.5, 0)
+	laserbeam.botSprite:setScaleY(widthScale)
 	
 	laserbeam:addEventListener(Event.ENTER_FRAME, laserbeam.Update, laserbeam)
 	
@@ -131,11 +143,9 @@ function LaserBeam.create(dx, dy, widthScale, speed, distance, disappearTime, in
 	laserbeam.world = world
 	laserbeam.damage = 2 + invoker.level
 	
+	laserbeam.radius = laserbeam.midSprite:getWidth() * widthScale * 0.5
+	
 	return laserbeam
-end
-
-function LaserBeam:setPosition(x, y)
-	Sprite.setPosition(self, x + 18, y + 1)
 end
 
 function LaserBeam:Update(event)
@@ -151,7 +161,7 @@ function LaserBeam:Update(event)
 		capsuleRange.height = self.length
 		capsuleRange.pointA = Vector2.new(x2, y2)
 		capsuleRange.pointB = Vector2.new(x2 + self.length * self.moving.x, y2 + self.length * self.moving.y)
-		capsuleRange.radius = 12
+		capsuleRange.radius = self.radius
 		
 		self.world:HitCapsuleRange(capsuleRange, self.damage)
 		
@@ -166,9 +176,18 @@ function LaserBeam:Update(event)
 		-- 사라지는 중입니다.
 		if self.disappearState == 0 and self.currentTime > 0.2 then
 			self:setScaleX(self:getScaleX() * 0.5)
+			-- 친구들아 고마웠어.
+			if self.invoker.GetFriends then
+				local friends = self.invoker:GetFriends()
+				for i = 1, #friends do
+					friends[i]:SetNearnessToPlayer(false)
+				end
+			end
+			self.disappearState = 1
 		elseif self.disappearState == 1 and self.currentTime > 0.4 then
 			self:setScaleX(self:getScaleX() * 0.5)
-		elseif self.disappearState == 2 and self.currentTime > 6.0 then
+			self.disappearState = 2
+		elseif self.disappearState == 2 and self.currentTime > 0.6 then
 			-- 사라진다.
 			self:removeEventListener(Event.ENTER_FRAME, self.Update, self)
 			self:getParent():removeChild(self)

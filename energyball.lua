@@ -8,8 +8,7 @@ function Science_EnergyBall.create()
 	energyball.cooltime = 0
 	energyball.distance = 250
 	energyball.flying_speed = 500
-	--energyball.type = "autopassive"
-	energyball.type = "active"
+	energyball.type = "autopassive"
 	
 	return energyball
 end
@@ -42,7 +41,7 @@ function Science_EnergyBall:Use(invoker, world)
 	local target = world:GetClosestEnemyFrom(x2, y2)
 	if target == nil then return end 
 	
-	-- 아이스볼트를 발사한다
+	-- 에너지볼을 발사한다
 	local x, y = target:getPosition()
 	local dx = x - x2
 	local dy = y - y2
@@ -50,7 +49,7 @@ function Science_EnergyBall:Use(invoker, world)
 	local length = math.sqrt(dx*dx + dy*dy)
 	
 	if length < 0.1 then 
-		-- 너무 붙어있다. 화살을 적당히 발사하자
+		-- 너무 붙어있다. 적당히 발사하자
 		dx = 1
 		dy = 0
 	else 
@@ -62,6 +61,19 @@ function Science_EnergyBall:Use(invoker, world)
 	local energyball = EnergyBall.create(dx, dy, self.flying_speed, self.distance, invoker.level, world)
 	energyball:setPosition(x2, y2)
 	world.effect_layer:addChild(energyball)
+	
+	if invoker.GetFriends then
+		local friends = invoker:GetFriends()
+		
+		for i = 1, #friends do
+			local friend = friends[i]
+			local fx, fy = friend:getPosition()
+			
+			local energyball = EnergyBall.create(dx, dy, self.flying_speed, self.distance, 1, world)
+			energyball:setPosition(fx, fy)
+			world.effect_layer:addChild(energyball)
+		end
+	end
 	
 	self.cooltime = self.delay
 end 
