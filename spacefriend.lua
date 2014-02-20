@@ -20,8 +20,10 @@ function SpaceFriend.create()
 	
 	spacefriend:addChild(movie)
 	spacefriend.movie = movie
-	spacefriend.movie:stop()
+	--spacefriend.movie:stop()
 	spacefriend.stopped = true
+	
+	spacefriend.movie:play()
 	
 	-- move에서 사용할 정보들
 	spacefriend.moving = {}
@@ -82,7 +84,7 @@ function SpaceFriend:MoveTo()
 		-- 움직일 필요가 없다?!
 		if not self.stopped then
 			self.stopped = true
-			self.movie:stop()
+			--self.movie:stop()
 		end
 		
 		return
@@ -96,7 +98,7 @@ function SpaceFriend:MoveTo()
 	if self.stopped then
 		-- 멈춰있었다면,
 		self.stopped = false
-		self.movie:play()
+		--self.movie:play()
 		self.moving.xv0, self.moving.yv0 = 0, 0
 	else
 		-- 이동중이었다면,
@@ -139,7 +141,7 @@ function SpaceFriend:Move(event)
 		self.moving.y = self.moving.destY
 		
 		self.stopped = true
-		self.movie:stop()
+		--self.movie:stop()
 	else
 		-- x
 		if self.moving.xv0 or self.moving.xa0 then
