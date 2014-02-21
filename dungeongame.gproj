@@ -9,6 +9,13 @@
  <file source="Vector2.lua"/>
  <file source="collision.lua"/>
  <folder name="skill">
+  <folder name="skillwindow">
+   <file source="skill_window/sample_skill_image.png"/>
+   <file source="skill_window/skillup_button.png"/>
+   <file source="skill_window/skill_window_bg.png"/>
+   <file source="skill_window/skill_frame.png"/>
+   <file source="skillWindow.lua"/>
+  </folder>
   <file source="energyball.lua"/>
   <file source="laserbeam.lua"/>
   <file source="frozenorb.lua"/>
