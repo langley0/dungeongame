@@ -133,10 +133,8 @@ function SpaceFriend:Move(event)
 		return a0*t*t/2 - (a0*t*t*t/3)/d + v0*t
 	end
 	
-	if self.moving.time >= self.moving.duration and 
-		math.abs(self.moving.x - self.moving.destX) < 2 and
-		math.abs(self.moving.y - self.moving.destY) < 2 then
-		-- 적당히 가까워졌으면 강제 집행.
+	if self.moving.time >= self.moving.duration then
+		-- 시간 지났으면 강제 집행.
 		self.moving.x = self.moving.destX
 		self.moving.y = self.moving.destY
 		
