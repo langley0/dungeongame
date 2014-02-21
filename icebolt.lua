@@ -162,7 +162,7 @@ function ExplosionSprite.create(textures, scale)
 	end
 	
 	explosionSprite.currentFrame = 1
-	explosionSprite.endFrame = #self.frames
+	explosionSprite.endFrame = #explosionSprite.frames
 	
 	explosionSprite.curentSubFrame = 0
 	explosionSprite.endSubFrame = 5
@@ -189,7 +189,7 @@ function ExplosionSprite:Update()
 end
 
 function ExplosionSprite:selfDestroy()
-	self:removeEventListener(Event.ENTER_FRAME, self.update, self)
+	self:removeEventListener(Event.ENTER_FRAME, self.Update, self)
 	self:removeFromParent()
 	--self:removeChild(self.frames[self.currentFrame])
 	--self.frames = nil
