@@ -1,11 +1,11 @@
 
 SkillWindow = Core.class(Sprite)
 
-local skill_window_bg_texture = Texture.new("skill/skillwindow/skill_window_bg.png")
-local skill_frame_texture = Texture.new("skill/skillwindow/skill_frame.png")
-local skillup_buttoon_texture = Texture.new("skill/skillwindow/skillup_button.png")
+local skill_window_bg_texture = Texture.new("windows/window_bg.png")
+local skill_frame_texture = Texture.new("windows/skillwindow/skill_frame.png")
+local skillup_buttoon_texture = Texture.new("windows/skillwindow/skillup_button.png")
 
-local temp_skillimage_texture = Texture.new("skill/skillwindow/sample_skill_image.png")
+local temp_skillimage_texture = Texture.new("windows/skillwindow/sample_skill_image.png")
 
 function SkillWindow:init()
 	local bg = Bitmap.new(skill_window_bg_texture)
@@ -161,6 +161,7 @@ function SkillWindow:SkillLevelUp(skillIndex)
 	-- 이제 올리자.
 	self.sp = self.sp - 1
 	skill.level = skill.level + 1
+	-- 여기서 실제 스킬에 올린 레벨을 반영하는 동작을 해줘야할 듯?
 	
 	skill.levelText:setText("("..skill.level.."/"..skill.maxlevel..")")
 	if skill.level == skill.maxlevel then
@@ -191,7 +192,7 @@ function SkillWindow:SkillLevelUp(skillIndex)
 	end
 end
 
--- 창을 닫을 때라던가, 스킬 레벨 업 완료를 누르면
+-- 스킬 업 버튼을 누르면 스킬이 레벨업 한 게
 -- 실제 스킬 정보에 반영되어야 하는데
 -- 현재는 구현되지 않음. 그냥 창 내에서만 정보가 바뀔 뿐임.
 function SkillWindow.create(skills, usable_point)

@@ -2,6 +2,20 @@
  <properties autorotation="0" encryptAssets="0" fps="60" scaleMode="3" mouseToTouch="1" iosDevice="0" packageName="com.nexon.devcat.dungeon" logicalHeight="1280" logicalWidth="720" mouseTouchOrder="0" encryptCode="0" retinaDisplay="0" touchToMouse="1" assetsOnly="0" orientation="1" architecture="1">
   <imageScales/>
  </properties>
+ <folder name="windows">
+  <folder name="statwindow">
+   <file source="stat_window/sample_character_portrait.png"/>
+   <file source="statWindow.lua"/>
+   <file source="stat_window/stat_frame.png"/>
+  </folder>
+  <file source="window_bg.png"/>
+  <folder name="skillwindow">
+   <file source="skill_window/sample_skill_image.png"/>
+   <file source="skill_window/skillup_button.png"/>
+   <file source="skill_window/skill_frame.png"/>
+   <file source="skillWindow.lua"/>
+  </folder>
+ </folder>
  <folder name="friend">
   <file source="spacefriend.lua"/>
  </folder>
@@ -9,13 +23,6 @@
  <file source="Vector2.lua"/>
  <file source="collision.lua"/>
  <folder name="skill">
-  <folder name="skillwindow">
-   <file source="skill_window/sample_skill_image.png"/>
-   <file source="skill_window/skillup_button.png"/>
-   <file source="skill_window/skill_window_bg.png"/>
-   <file source="skill_window/skill_frame.png"/>
-   <file source="skillWindow.lua"/>
-  </folder>
   <file source="energyball.lua"/>
   <file source="laserbeam.lua"/>
   <file source="frozenorb.lua"/>
