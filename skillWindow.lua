@@ -205,5 +205,14 @@ function SkillWindow.create(skills, usable_point)
 	-- set usable skill point
 	window:SetUsableSkillPoint(usable_point)
 	
+	-- 창의 배경 바깥 영역을 터치하면 사라지기.
+	local touchFunc = function(self, event)
+		if not self:hitTestPoint(event.touch.x, event.touch.y) then
+			event:stopPropagation()
+			self:removeFromParent()
+		end
+	end
+	window:addEventListener(Event.TOUCHES_BEGIN, touchFunc, window)
+	
 	return window
 end
