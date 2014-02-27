@@ -7,7 +7,7 @@ function Magic_IceBolt.create()
 	icebolt.delay = 1.0
 	icebolt.cooltime = 0
 	icebolt.distance = 500
-	icebolt.flying_speed = 300
+	icebolt.flying_speed = 350
 	icebolt.type = "autopassive"
 	
 	return icebolt
@@ -58,7 +58,7 @@ function Magic_IceBolt:Use(invoker, world)
 	end 
 	
 	-- 스피드를 곱해서 적당히 발사하자
-	local icebolt = IceBolt.create(dx, dy, self.flying_speed, self.distance, invoker.level, world)
+	local icebolt = IceBolt.create(dx, dy, self.flying_speed, self.distance, invoker.level, world, 0.8 + invoker.level*0.3 )
 	icebolt:setPosition(x2, y2)
 	world.effect_layer:addChild(icebolt)
 	
@@ -69,12 +69,13 @@ local icebolt_texture = Texture.new("weapon/icebolt.png")
 
 
 IceBolt = Core.class(Sprite)
-function IceBolt.create(x, y, speed, distance, level, world)
+function IceBolt.create(x, y, speed, distance, level, world, size_scale)
 
 	local icebolt = IceBolt.new()
 	
 	icebolt.image = Bitmap.new(icebolt_texture)
 	icebolt.image:setAnchorPoint(0.5, 0.5)
+	icebolt.image:setScale(size_scale, size_scale)
 	icebolt.image:setRotation(math.deg(math.atan2(y, x)))
 	icebolt.image:setBlendMode(Sprite.ADD)
 	icebolt:addChild(icebolt.image)
@@ -96,7 +97,7 @@ function IceBolt.create(x, y, speed, distance, level, world)
 end
 
 function IceBolt:Update(event)
-
+	if IsPaused() then return end
 	local x, y = self:getPosition()
 	
 	local distance = self.moving.speed *event.deltaTime
@@ -153,7 +154,7 @@ function ExplosionSprite:init(scale)
 	self.frames = {}
 	for i = 1, #icebolt_hit_explosion_textures, 1 do
 		local frame = Bitmap.new(icebolt_hit_explosion_textures[i])
-		frame:setAnchorPoint(0.5, 0.5)
+		frame:setAnchorPoint(0.5, 0.85)
 		frame:setScale(scale, scale)
 		frame:setBlendMode(Sprite.ADD)
 		self.frames[i] = frame

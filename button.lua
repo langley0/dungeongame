@@ -51,13 +51,16 @@ function Button:TouchBegin(event)
 		-- 텍스쳐를 바꾼다
 		self.mesh:setTexture(button_over_texture)
 		self.text:setTextColor(0x000000)
-		self.touched = true
+		self.touched = event.touch.id
+		
+		event:stopPropagation()
 	end
 end
 
 
 function Button:TouchEnd(event)
-	if self.touched then
+	if self.touched == event.touch.id then
+	
 		-- 일단 텍스쳐는 바꾸고. 히트테스트를 한번 더한다
 		self.mesh:setTexture(button_default_texture)
 		self.text:setTextColor(0xffffff)
@@ -69,5 +72,7 @@ function Button:TouchEnd(event)
 			end
 		end
 		
+		event:stopPropagation()
+		self.touched = nil
 	end
 end

@@ -1,13 +1,19 @@
 Enemy = Core.class(Sprite)
 
 local e_t = Texture.new("enemy/enemy02.png")
+local e_t2 = Texture.new("enemy/enemy03.png")
 
 function Enemy.create(world, type)
 
+	local my_t = e_t
+	if type == 3 then 
+		my_t = e_t2
+	end 
+	
 	-- 네방향 플레이어 이미지를 만든다
 	local down_bitmaps = {
-		Bitmap.new(TextureRegion.new(e_t, 0,0,16,16)),
-		Bitmap.new(TextureRegion.new(e_t, 16,0,16,16)) }
+		Bitmap.new(TextureRegion.new(my_t, 0,0,16,16)),
+		Bitmap.new(TextureRegion.new(my_t, 16,0,16,16)) }
 		
 	for i = 1, #down_bitmaps do 
 		down_bitmaps[i]:setAnchorPoint(0.5, 0.5)
@@ -50,9 +56,9 @@ function Enemy.create(world, type)
 		e.exp = 2
 		e.attack_delay = 3
 	elseif type == 3 then 
-		e.hp = 80
-		e.hpmax = 80
-		e.speed = 150
+		e.hp = 200
+		e.hpmax = 200
+		e.speed = 300
 		e.exp = 4
 		e.attack_delay = 3
 	end
@@ -72,12 +78,22 @@ function Enemy:Die()
 	
 	if self.destroyed then return end
 	
-	self.destroyed = true
-	
 	local x, y = self:getPosition()
 	local tx, ty = self.world.map:GetTileIndexOnPosition(x, y)
 	
-	-- 시체로 만든다
+	-- 시체를 블로우 시킨다
+	-- 플레이어 반대방향으로 100 정도 날린다
+	-- 올라갔다 내려오는 느낌을 주기 위해서 중간에 속도를 늦추고 마지막에 빠르게 해보자
+	local px, py = self.world.player:getPosition()
+	local dx = x - px 
+	local dy = y - py
+	local length = math.max(math.sqrt(dx * dx + dy*dy), 1)
+	self.blow = { dx = dx / length * 400, dy = dy / length *  400, time = 0 }
+	
+	
+	self.current_movie:stop()
+	
+	--[[
 	self:getParent():removeChild(self)
 	self:removeChild(self.current_movie)
 	local bmp = Bitmap.new(TextureRegion.new(e_t, 32,0,16,16))
@@ -85,7 +101,7 @@ function Enemy:Die()
 	bmp:setScale(SPRITE_SCALE,SPRITE_SCALE)
 	self:addChild(bmp)
 	self.world.corpse_layer:addChild(self)
-	
+	]]
 	
 	
 	-- 차지하고 있는 좌표를 지운다
@@ -257,7 +273,7 @@ function Enemy:Stop(force)
 end 
 
 function Enemy:Update(event)
-
+	if IsPaused() then return end
 	if self.destroyed then return end
 	
 	if self.id == nil then 
@@ -266,6 +282,26 @@ function Enemy:Update(event)
 	
 	local world = self.world
 	local x, y = self:getPosition()
+	
+	if self.blow then 
+		self.blow.time = self.blow.time + event.deltaTime
+		local speed_rate = math.max(0, 1 - self.blow.time) 
+		local my_x = self.blow.dx * event.deltaTime*speed_rate + x
+		local my_y = self.blow.dy * event.deltaTime*speed_rate + y
+		
+		self:setPosition(my_x, my_y)
+		self:setScale(2 - speed_rate,  2- speed_rate)
+		self:setAlpha(1 - self.blow.time)
+		self:setRotation(self.blow.time * 360)
+		
+		if self.blow.time >= 1 then 
+			-- 자신을 지운다
+			self:getParent():removeChild(self)
+			self.destroyed = true
+		end 
+		
+		return
+	end 
 	
 	if self.knockback then 
 		

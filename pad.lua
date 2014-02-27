@@ -8,10 +8,12 @@ function Pad.create()
 	p.ring = Bitmap.new(Texture.new("pad/vpad_ring.png"))
 	p.ring:setAnchorPoint(0.5, 0.5)
 	p.ring:setScale(3, 3)
+	p.ring:setAlpha(0.5)
 	
 	p.stick = Bitmap.new(Texture.new("pad/vpad_stick.png"))
 	p.stick:setAnchorPoint(0.5, 0.5)
 	p.stick:setScale(3, 3)
+	p.stick:setAlpha(0.7)
 
 	p.stick_base = Sprite.new()
 	p.stick_base:addChild(p.ring)
@@ -115,15 +117,17 @@ function Pad:SetStick(x, y)
 			dy = dy / length
 		end 
 		
-		length = math.min(length, 60)
+		local max_length = 60
+		local origin_length = length 
+		length = math.min(length, max_length)
 		
 		self.stick:setPosition(dx * length, dy *length)
-		dx = dx * length / 60
-		dy = dy * length / 60
+		dx = dx * length / max_length
+		dy = dy * length / max_length
 		self.dx = dx
 		self.dy = dy
 		
-		return dx, dy
+		return self.dx, self.dy
 	else 
 		return 0, 0
 	end 
@@ -138,10 +142,16 @@ function Pad:OnTouchBegin(event, player, world)
 		
 			if skill.skill.type == "charge" then
 				skill.touchid = event.touch.id
-				skill.skill:Activate()
 				
-				self:removeChild(skill.fire_off_image)
-				self:addChild(skill.fire_on_image)
+				if skill.skill.activate then 
+					-- 
+				else 
+					skill.skill:Activate()
+					
+					self:removeChild(skill.fire_off_image)
+					self:addChild(skill.fire_on_image)
+				end 
+				
 			elseif skill.skill.type == "action" then
 				skill.touchid = event.touch.id
 				if skill.skill:CanUse(player, world) then 
@@ -154,31 +164,42 @@ function Pad:OnTouchBegin(event, player, world)
 			
 			return true
 		end 
+	end
+	
+	if gamemenu.show then 
+		gamemenu:Hide()
 	end 
 	
+	
 	return false
+	
 	
 end 
 
 function Pad:OnTouchEnd(event)
+
+	if gamemenu.show ~= true then 
+		gamemenu:Show()
+	end 
+	
 
 	for i = 1, #self.skills do
 		local skill =self.skills[i]
 		if skill.touchid == event.touch.id then 
 			if skill.skill.activate then 
 				skill.skill:Deactivate()
+				
+				self:removeChild(skill.fire_on_image)
+				self:addChild(skill.fire_off_image)
+				
+				skill.touchid = nil
 			end 
-			
-			self:removeChild(skill.fire_on_image)
-			self:addChild(skill.fire_off_image)
-			
-			skill.touchid = nil
 		end 
-	end 
+	end
 end 
 
 function Pad:AssignSkill(index, skill)
-
+	
 	local _skill = self.skills[index]
 	_skill.skill = skill
 	if skill.type == "autopassive" then 
@@ -218,8 +239,8 @@ function Pad:Update(event)
 		local length = math.sqrt(dx*dx + dy*dy)
 		if length > 60 then 
 			-- 이동을 한다
-			x = x + event.deltaTime * dx / length * 128
-			y = y + event.deltaTime * dy / length * 128
+			x = x + event.deltaTime * dx / length * 60
+			y = y + event.deltaTime * dy / length * 60
 			
 			self.stick_base:setPosition(x, y)
 		end

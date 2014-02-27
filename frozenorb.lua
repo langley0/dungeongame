@@ -4,13 +4,13 @@ function Magic_FrozenOrb.create()
 	local orb =  Magic_FrozenOrb.new()
 
 	orb.name = "프로즌오브"
-	orb.delay = 0.3 -- 여긴 대충 쓴값
+	orb.delay = 1
 	orb.cooltime = 0
-	orb.distance = 300
+	orb.distance = 800
 	orb.flying_speed = 100
-	orb.type = "action"
+	orb.type = "charge"
 	
-	orb.stamina = 50
+	orb.stamina = 25
 	
 	-- 아래 내용을 Use에서 플레이어 레벨에 따라 바꿔줄 수 있어야 할 것도 같지만 일단은 이렇게..
 	orb.fireCountPerRound = 6 -- 한바퀴 돌 동안 뿌릴 개수
@@ -25,6 +25,13 @@ function Magic_FrozenOrb.create()
 	return orb
 end
 
+function Magic_FrozenOrb:Activate()
+	self.activate = true
+end 
+
+function Magic_FrozenOrb:Deactivate()
+	self.activate = nil
+end
 
 -- 무기 공통함수
 function Magic_FrozenOrb:CanUse(invoker, world)
@@ -49,19 +56,26 @@ function Magic_FrozenOrb:Update(deltaTime)
 end 
 
 function Magic_FrozenOrb:Use(invoker, world)
-	--print("여기서 프로즌 오브 발사")
-	local x2, y2 = invoker:getPosition()
-	
-	local target = world:GetClosestEnemyFrom(x2, y2)
-	if target == nil then return end 
-	
-	invoker.stamina = invoker.stamina - self.stamina
 	
 	-- 프로즌 오브를 발사한다
-	local x, y = target:getPosition()
+	local x2, y2 = invoker:getPosition()
+	local target = world:GetClosestEnemyFrom(x2, y2, invoker.direction.rad)
+	local x, y
+	
+	if target then 
+		-- 캐릭터가 향한 방향으로 해야하나? -- 고민중
+		x, y = target:getPosition()
+	else 
+		-- 원래는 캐릭터 방향에 맞추어서 쏴야하는데 대충 하자
+		x = x2 + invoker.direction.x
+		y = y2 + invoker.direction.y
+	end 
+	
 	local dx = x - x2
 	local dy = y - y2
 	
+	-- 원래 여기서 깎아야 하는데.. 잘못만들어서 다른데서 깎고 있다. 
+	--invoker.stamina = invoker.stamina - self.stamina
 	local length = math.sqrt(dx*dx + dy*dy)
 	
 	if length < 0.1 then 
@@ -130,6 +144,8 @@ function FrozenOrb.create(x, y, speed, distance, rotatingTime, fireCountPerRound
 end
 
 function FrozenOrb:Update(event)
+	if IsPaused() then return end
+	
 	local x, y = self:getPosition()
 	
 	local distance = self.moving.speed *event.deltaTime
@@ -179,7 +195,7 @@ function FrozenOrb:Fire()
 	
 	local dx, dy = math.cos(direction), -math.sin(direction)
 	
-	local icebolt = IceBolt.create(dx, dy, self.iceboltData.flying_speed, self.iceboltData.distance, self.iceboltData.level, self.world)
+	local icebolt = IceBolt.create(dx, dy, self.iceboltData.flying_speed, self.iceboltData.distance, self.iceboltData.level, self.world, 1)
 	icebolt:setPosition(x2 + dy * r, y2 - dx * r)
 	self.world.effect_layer:addChild(icebolt)
 	
@@ -197,7 +213,7 @@ function FrozenOrb:FinalFire()
 	for i = 1, self.finalFireCount, 1 do
 		local dx, dy = math.cos(direction), -math.sin(direction)
 	
-		local icebolt = IceBolt.create(dx, dy, self.iceboltData.flying_speed, self.iceboltData.distance, self.iceboltData.level, self.world)
+		local icebolt = IceBolt.create(dx, dy, self.iceboltData.flying_speed, self.iceboltData.distance, self.iceboltData.level, self.world, 1)
 		icebolt:setPosition(x2 + dy * r, y2 - dx * r)
 		self.world.effect_layer:addChild(icebolt)
 		

@@ -1,5 +1,9 @@
 World = Core.class(Sprite)
 
+function IsPaused()
+	return gamemenu.value > 0 and gamemenu.autobattle == false
+end 
+
 function World.create()
 
 	local w = World.new()
@@ -47,6 +51,15 @@ function World.create()
 
 end 
 
+function World:Destroy()
+
+	r:removeEventListener(Event.ENTER_FRAME, w.Update, w)
+	w:removeEventListener(Event.TOUCHES_BEGIN, w.TouchBegin, w)
+	w:removeEventListener(Event.TOUCHES_MOVE, w.TouchMove, w)
+	w:removeEventListener(Event.TOUCHES_END, w.TouchEnd, w)
+	
+end 
+
 function World:EnterPlayer(player)
 	-- 플레이어가 월드에 들어온다
 	self.player = player
@@ -57,8 +70,9 @@ function World:EnterPlayer(player)
 	self:AddLight(player.light)
 	self.character_layer:addChild(player)
 	self.hud:SetPlayer(player)
+	self.effect_layer:addChild(player.lockon)
 	
-	player:addChild(player.direction.image)
+	--player:addChild(player.direction.image)
 	
 	
 	for i = 1, #player.skills do
@@ -221,6 +235,13 @@ function World:Hit(enemy, damage)
 		enemy:Die()
 		-- 플레이어에게는 경험치를 준다
 		self.player:AddExp(enemy.exp)
+		-- 코인을 떨어트린다
+		if math.random(100) < 20 then 
+			local coin = Coin.create(self)
+			coin:setPosition(enemy:getPosition())
+			
+			self.character_layer:addChild(coin)
+		end 
 	end 
 end 
 
@@ -272,6 +293,7 @@ function World:RemoveMonster(monster)
 end
 
 function World:Update(event)
+	if IsPaused() then return end
 	self:CheckStageClear()
 end 
 
@@ -409,8 +431,35 @@ function World:CheckStageClear()
 			self:ResetStageTo(next_level)
 		else 
 			-- 미션 완료
-			local bmp = Bitmap.new(Texture.new("dungeon/mission_clear.png"))
-			stage:addChild(bmp)
+			if self.show_missionclear then 
+				-- 미션 클리어를 이미 보여주었다
+			else 
+				self.show_missionclear = true
+				local bmp = Bitmap.new(Texture.new("dungeon/mission_clear.png"))
+				self:addChild(bmp)
+				
+				-- 집으로 돌아가기 버튼을 넣는다
+				local bt = Button.create("처음으로", self.GotoLobby, self, 250, 50)
+				bt:setPosition(500, 400)
+				self:addChild(bt)
+			end 
 		end 
 	end 
+	
+	if self.player.dead then 
+		if self.show_missionfail then 
+			-- 이미 보여주었다
+		else 
+			self.show_missionfail = true
+			local bmp = Bitmap.new(Texture.new("dungeon/mission_fail.png"))
+			self:addChild(bmp)
+			
+			-- 집으로 돌아가기 버튼을 넣는다
+			local bt = Button.create("처음으로", self.GotoLobby, self, 250, 50)
+			bt:setPosition(500, 400)
+			self:addChild(bt)
+		end 
+	end 
+	
+	
 end 

@@ -38,6 +38,7 @@ end
 
 
 function HitDamageText:Update(event)
+	if IsPaused() then return end
 	-- 텍스트가 있나?
 	if self.first then 
 		self.first.image:setScale(1 - self.first.time)

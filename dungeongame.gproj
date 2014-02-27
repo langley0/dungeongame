@@ -2,6 +2,18 @@
  <properties autorotation="0" encryptAssets="0" fps="60" scaleMode="3" mouseToTouch="1" iosDevice="0" packageName="com.nexon.devcat.dungeon" logicalHeight="1280" logicalWidth="720" mouseTouchOrder="0" encryptCode="0" retinaDisplay="0" touchToMouse="1" assetsOnly="0" orientation="1" architecture="1">
   <imageScales/>
  </properties>
+ <folder name="drop">
+  <file source="cristal.png"/>
+  <file source="coin.lua"/>
+ </folder>
+ <folder name="boss_skill">
+  <file source="fireball_explode.png"/>
+  <file source="boss_bomb_marker.png"/>
+  <file source="fireball.png"/>
+  <file source="boss_dash.lua"/>
+  <file source="boss_deathfire.lua"/>
+  <file source="boss_gunshot.lua"/>
+ </folder>
  <folder name="skill">
   <file source="frozenorb.lua"/>
   <file source="icebolt.lua"/>
@@ -9,6 +21,8 @@
   <file source="bow_basicattack.lua"/>
  </folder>
  <folder name="enemy">
+  <file source="enemy03.png"/>
+  <file source="boss.lua"/>
   <file source="hp_bar.lua"/>
   <file source="hitdamagetext.lua"/>
   <file source="enemy02.png"/>
@@ -29,6 +43,9 @@
   <file source="pad.lua"/>
  </folder>
  <folder name="dungeon">
+  <file source="blackscreen.png"/>
+  <file source="gamemenu.lua"/>
+  <file source="mission_fail.png"/>
   <file source="player_hud.png"/>
   <file source="hud.lua"/>
   <file source="tile04.png"/>
@@ -65,6 +82,7 @@
   <file source="button_default.png"/>
  </folder>
  <folder name="player">
+  <file source="lockon.png"/>
   <file source="direction.png"/>
   <file source="warrior.png"/>
   <file source="archer.png"/>

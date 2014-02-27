@@ -50,6 +50,7 @@ local function init_warrior(self)
 	self.movie:stop()
 	self.stopped = true
 	
+	
 end 
 
 local function init_archer(self)
@@ -117,7 +118,7 @@ local function init_wizard(self)
 	
 	self.stamina_max = 100
 	self.stamina = self.stamina_max
-	self.stamina_recovery = 10
+	self.stamina_recovery = 30
 	self.last_stamina_used = 0
 	
 	
@@ -187,7 +188,22 @@ function Player.create(type)
 	d_bitmap:setAlpha(0.5)
 	
 	p.direction = { x = 1, y = 0, rad = 0, image =  d_bitmap}
+	p.lockon = nil
 	
+	
+	do 
+		local lockon_texture = Texture.new("player/lockon.png")
+		p.lockon = Sprite.new()
+		p.lockon.lockon_red = Bitmap.new(TextureRegion.new(lockon_texture, 0, 0, 16,32))
+		p.lockon.lockon_red:setAnchorPoint(0.5,0.75)
+		p.lockon.lockon_red:setScale(3,3)
+		
+		p.lockon.lockon_green = Bitmap.new(TextureRegion.new(lockon_texture, 16, 0, 16,32))
+		p.lockon.lockon_green:setAnchorPoint(0.5,0.75)
+		p.lockon.lockon_green:setScale(3,3)
+		
+		p.lockon:addChild(p.lockon.lockon_red)
+	end 
 	return p
 end 
 
@@ -200,6 +216,7 @@ function Player:Warp(x, y)
 		self:setPosition(to_x, to_y)
 		self.light:setPosition(to_x, to_y)
 		self.world:LocateCenter(to_x, to_y)
+		self.lockon:setPosition(to_x, to_y)
 	end 
 end 
 
@@ -222,19 +239,16 @@ function Player:Stop()
 	
 	self.movie:gotoAndStop(1)
 	self.stopped = true
+
 end 
 
 function Player:Update(event)
+	if IsPaused() then return end
+	if self.dead then return end
+	
 	
 	local world = self.world
 	local x, y = self:getPosition()
-	
-	-- 방향업데이트
-	if self.direction then 
-		local theta = math.atan2(self.direction.y, self.direction.x)
-		self.direction.rad = theta
-		self.direction.image:setRotation(math.deg(self.direction.rad))
-	end 
 	
 	-- 이동을 한다
 	if self.moving2 then 
@@ -249,6 +263,49 @@ function Player:Update(event)
 		self:setPosition(x, y)
 		-- 라이트 위치를 업데이트
 		self.light:setPosition(x, y)
+	end 
+	
+	-- 방향업데이트
+	if self.direction then 
+		if self.moving2 then 
+			self.direction.x = self.moving2.dx
+			self.direction.y = self.moving2.dy
+			self.direction.rad = math.atan2(self.direction.y, self.direction.x)
+		end 
+	end 
+	
+	-- 타겟을 검색한다
+	local enemy = world:GetClosestEnemyFrom(x, y)
+	local lockon_x, lockon_y
+	if enemy then 
+		lockon_x, lockon_y = enemy:getPosition()
+	else 
+		-- 캐릭터의 이동방향 앞쪽 48*5 를 목표로 한다. 나중에 사거리로 변경
+		lockon_x = self.direction.x * 48*5  + x
+		lockon_y = self.direction.y * 48*5  + y
+	end 
+	-- 락온을 타겟으로 이동시킨다
+	local lockon_x2, lockon_y2 = self.lockon:getPosition()
+	local lockon_dx = lockon_x - lockon_x2
+	local lockon_dy = lockon_y - lockon_y2
+	local l_len = math.sqrt(lockon_dx*lockon_dx + lockon_dy*lockon_dy)
+	if l_len > 1 then
+		lockon_dx = lockon_dx / l_len
+		lockon_dy = lockon_dy / l_len
+		local _dist = math.min(l_len, self.speed*2*event.deltaTime)
+		self.lockon:setPosition(lockon_x2 + lockon_dx* _dist , lockon_y2 + lockon_dy* _dist )
+	end 
+	
+	if enemy and l_len <= 24 then 
+		if self.lockon.lockon_green:getParent() ~= self.lockon then 
+			self.lockon:removeChild(self.lockon.lockon_red)
+			self.lockon:addChild(self.lockon.lockon_green)
+		end 
+	else 
+		if self.lockon.lockon_red:getParent() ~= self.lockon then 
+			self.lockon:removeChild(self.lockon.lockon_green)
+			self.lockon:addChild(self.lockon.lockon_red)
+		end 
 	end 
 	
 	-- 스킬사용을 확인한다
@@ -273,13 +330,13 @@ function Player:Update(event)
 	
 	if charge_skill_used then 
 		-- 
-	else 
+	else
 		-- 기본 오토 패시브 스킬을 사용한다
 		for i = 1, #self.skills do 
 			local skill = self.skills[i]
 			if skill.type == "autopassive" then 
 				-- 오토 스킬사용
-				if skill:CanUse() then 
+				if skill:CanUse(self, world) then 
 					skill:Use(self, world)
 				end 
 			end
@@ -293,7 +350,7 @@ function Player:Update(event)
 	
 	-- 스태미너 회복
 	if self.stamina < self.stamina_max and 
-		self.last_stamina_used + 5 <=  event.time then 
+		self.last_stamina_used + 2 <=  event.time then 
 		-- 스태미너 회복을 시작한다
 		self.stamina = math.min(self.stamina_max, self.stamina + self.stamina_recovery * event.deltaTime)
 	end 
@@ -319,14 +376,18 @@ function Player:AddExp(exp)
 	
 end 
 
+
+
 function Player:OnHit(damage)
 	
 	-- 공격을 당했다.
 	self.hp = self.hp - damage
 	if self.hp <= 0 then 
 		self.hp = 0
-		-- 미션 실패이다.
-		-- ?? 어떻게 할지는 미정
+		-- 사망 
+		self:Stop()
+		self.dead = true
+		
 	else 
 		if self.hiteffect then 
 			if self.hiteffect.finished then 

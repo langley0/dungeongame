@@ -87,7 +87,7 @@ function Arrow.create(x, y, speed, distance, invoker, world)
 end
 
 function Arrow:Update(event)
-
+	if IsPaused() then return end
 	local x, y = self:getPosition()
 	
 	local distance = self.moving.speed *event.deltaTime

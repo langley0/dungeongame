@@ -33,7 +33,7 @@ function TimeEffect:Finish()
 end 
 
 function TimeEffect:Update(event)
-
+	if IsPaused() then return end
 	if self.finished then return end 
 
 	-- 레벨업 이펙트를 실행
