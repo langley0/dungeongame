@@ -2,6 +2,7 @@
  <properties autorotation="0" encryptAssets="0" fps="60" scaleMode="3" mouseToTouch="1" iosDevice="0" packageName="com.nexon.devcat.dungeon" logicalHeight="1280" logicalWidth="720" mouseTouchOrder="0" encryptCode="0" retinaDisplay="0" touchToMouse="1" assetsOnly="0" orientation="1" architecture="1">
   <imageScales/>
  </properties>
+<<<<<<< HEAD
  <folder name="drop">
   <file source="cristal.png"/>
   <file source="coin.lua"/>
@@ -14,6 +15,7 @@
   <file source="boss_deathfire.lua"/>
   <file source="boss_gunshot.lua"/>
  </folder>
+=======
  <folder name="windows">
   <folder name="statwindow">
    <file source="stat_window/sample_character_portrait.png"/>
@@ -34,6 +36,7 @@
  <file source="MathExt.lua"/>
  <file source="Vector2.lua"/>
  <file source="collision.lua"/>
+>>>>>>> 3ad30a6b80ad2d6c0185e4b57da9bc18ef706ce8
  <folder name="skill">
   <file source="energyball.lua"/>
   <file source="laserbeam.lua"/>
@@ -110,9 +113,12 @@
   <file source="button_default.png"/>
  </folder>
  <folder name="player">
+<<<<<<< HEAD
   <file source="lockon.png"/>
+=======
   <file source="spacefriend.png"/>
   <file source="spaceman.png"/>
+>>>>>>> 3ad30a6b80ad2d6c0185e4b57da9bc18ef706ce8
   <file source="direction.png"/>
   <file source="warrior.png"/>
   <file source="archer.png"/>

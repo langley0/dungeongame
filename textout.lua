@@ -42,3 +42,15 @@ function CreateTextOutLine(text)
 	
 	return base
 end
+
+function CreateTextWithSize(text, size)
+	if not size then
+		return CreateText(text)
+	end
+	
+	if text then 
+		return TextField.new(TTFont.new("text/mtcg.ttf", size, true), text)
+	else 
+		return TextField.new(TTFont.new("text/mtcg.ttf", size, true),"")
+	end
+end

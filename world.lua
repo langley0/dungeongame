@@ -199,7 +199,7 @@ end
 function World:GetAllEnemyInRange(x, y, range)
 	
 	-- 적들의 반경을 더한다
-	local range_sqr = (range * 24)*(range * 24)
+	local range_sqr = (range + 24)*(range + 24)
 	local result = {}
 	
 	
@@ -216,7 +216,25 @@ function World:GetAllEnemyInRange(x, y, range)
 	end 
 	
 	return result
-end 
+end
+
+function World:GetAllEnemyInCapsuleRange(capsuleRange)
+	local result = {}
+	
+	for i = 1, #self.enemies do 
+		local enemy = self.enemies[i]
+		local ex, ey = enemy:getPosition()
+		
+		local sphereRange = {}
+		sphereRange.centerPoint = Vector2.new(ex, ey)
+		sphereRange.radius = 12
+		
+		if HitTestCapsuleAndSphere(capsuleRange, sphereRange) then
+			result[#result + 1] = enemy 
+		end 
+	end 
+	return result
+end
 
 function World:GetWallOnPosition(x, y)
 
@@ -274,7 +292,28 @@ function World:HitRange(x, y, radius, damage)
 		]]
 	end 
 	
-end 
+end
+
+function World:HitCapsuleRange(capsuleRange, damage)
+	--[[
+	-- for test
+	local pointText = TextField.new(normalfont, "A")
+	pointText:setPosition(capsuleRange.pointA.x, capsuleRange.pointA.y)
+	pointText:setTextColor(0xff0000)
+	self:addChild(pointText)
+	local pointText2 = TextField.new(normalfont, "B")
+	pointText2:setPosition(capsuleRange.pointB.x, capsuleRange.pointB.y)
+	pointText2:setTextColor(0x0000ff)
+	self:addChild(pointText2)
+	]]
+	local result = self:GetAllEnemyInCapsuleRange(capsuleRange)
+	for i = 1, #result do 
+		local enemy = result[i]
+		
+		self:Hit(enemy, damage)
+	end 
+
+end
 
 function World:RemoveMonster(monster)
 	
@@ -291,6 +330,13 @@ function World:RemoveMonster(monster)
 	self.enemies = new
 	
 end
+
+function World:EnterFriend(friend)
+	-- 친구가 월드에 들어온다
+	self.character_layer:addChild(friend)
+	
+	friend:addEventListener(Event.ENTER_FRAME, friend.Update, friend)
+end 
 
 function World:Update(event)
 	if IsPaused() then return end
